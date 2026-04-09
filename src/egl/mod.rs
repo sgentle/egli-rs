@@ -693,6 +693,26 @@ pub fn get_display(display_id: EGLNativeDisplayType) -> EglCallResult<EGLDisplay
     }
 }
 
+/// `[EGL 1.5]` Return an EGL display connection for a specific platform.
+#[cfg(feature = "egl_1_5")]
+pub fn get_platform_display(platform: EGLenum, display_id: EGLNativeDisplayType, attrib_list: &[EGLint]) -> EglCallResult<EGLDisplay> {
+    unsafe {
+        let attribs = if attrib_list.len() > 0 {
+            attrib_list.as_ptr()
+        } else {
+            ptr::null()
+        };
+
+        let display = ffi::eglGetPlatformDisplay(platform, display_id, attribs);
+
+        if !display.is_null() {
+            Ok(display)
+        } else {
+            Err(EglCallError::GetDisplay)
+        }
+    }
+}
+
 /// `[EGL 1.0]` Return error information.
 pub fn get_error() -> EGLint {
     unsafe { ffi::eglGetError() }

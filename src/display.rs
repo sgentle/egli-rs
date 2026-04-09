@@ -74,6 +74,20 @@ impl Display {
         }
     }
 
+    /// `[EGL 1.0]` Create a `Display` from a platform and an EGL display connection.
+    #[cfg(feature = "egl_1_5")]
+    pub fn from_platform_display_id(platform: egl::EGLenum, display_id: egl::EGLNativeDisplayType, attrib_list: &[EGLint]) -> Result<Display> {
+        match egl::get_platform_display(platform, display_id, attrib_list) {
+            Ok(handle) => {
+                Ok(Display {
+                    terminated: false,
+                    handle: handle,
+                })
+            }
+            Err(e) => Err(e.into()),
+        }
+    }
+
     /// `[EGL 1.0]` Creates a `Display` from the default display.
     ///
     /// This is a convenience wrapper that calls `Display::from_display_id` with
